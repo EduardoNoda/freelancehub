@@ -1,4 +1,4 @@
-package br.com.freelancehub.freelancehub.domain;
+package br.com.freelancehub.freelancehub.domain.enums;
 
 public enum ProjectStatus {
     IN_NEGOTIATION,
