@@ -1,25 +1,33 @@
 package br.com.freelancehub.freelancehub.domain;
 
 
+import br.com.freelancehub.freelancehub.domain.enums.ProjectStatus;
+import br.com.freelancehub.freelancehub.domain.enums.ProjectType;
+import br.com.freelancehub.freelancehub.domain.valueobjects.Deadline;
+
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class Project {
 
-    Long id;
+    private Long id;
 
-    String name;
+    private LocalDate updatedAt;
 
-    //String description;
+    private String name;
 
-    //TODO: prazo
 
-    ProjectStatus status;
+    private ProjectType type;
 
-    ProjectType type;
+    private String description;
 
-    BigDecimal value;
+    private Deadline deadline;
 
-    BigDecimal cost;
+    private BigDecimal value;
+
+    private BigDecimal cost;
+
+    private ProjectStatus status;
 
     Long clientId;
 
@@ -44,5 +52,10 @@ public class Project {
             throw new IllegalStateException("Invalid transaction!");
 
         this.status = newStatus;
+    }
+    public void extendDeadline (Deadline newDeadLine) {
+        if (this.deadline != null && newDeadLine.getDueDate().isBefore(this.deadline.getDueDate()))
+            throw new IllegalArgumentException("New date must be after the old date");
+        this.deadline = newDeadLine;
     }
 }
