@@ -13,13 +13,13 @@ public class User {
 
     private Email email;
 
-    private Password password;
+    private String password;
 
     public User (
             String name,
             String lastName,
             Email email,
-            Password password
+            String password
     ) {
         if (name == null || name.isBlank())
             throw new IllegalArgumentException("Name cannot be null");
