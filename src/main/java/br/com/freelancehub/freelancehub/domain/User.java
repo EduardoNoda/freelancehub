@@ -1,7 +1,6 @@
 package br.com.freelancehub.freelancehub.domain;
 
 import br.com.freelancehub.freelancehub.domain.valueobjects.Email;
-import br.com.freelancehub.freelancehub.domain.valueobjects.Password;
 
 public class User {
 
