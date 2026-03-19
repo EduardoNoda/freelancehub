@@ -36,4 +36,8 @@ public class User {
         return name + " " + lastName;
     }
 
+    public String getPasswordHash() {
+        return this.password;
+    }
+
 }
