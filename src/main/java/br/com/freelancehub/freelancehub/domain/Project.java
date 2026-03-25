@@ -12,10 +12,11 @@ public class Project {
 
     private Long id;
 
+    private Long userId;
+
     private LocalDate updatedAt;
 
     private String name;
-
 
     private ProjectType type;
 
@@ -31,14 +32,17 @@ public class Project {
 
     Long clientId;
 
-    public Project(Long id,
-                   String name,
-                   ProjectStatus status,
-                   ProjectType type,
-                   BigDecimal value,
-                   BigDecimal cost,
-                   Long clientId) {
+    public Project(
+            Long id,
+            Long userId,
+            String name,
+            ProjectStatus status,
+            ProjectType type,
+            BigDecimal value,
+            BigDecimal cost,
+            Long clientId) {
         this.id = id;
+        this.userId = userId;
         this.name = name;
         this.status = status;
         this.type = type;
