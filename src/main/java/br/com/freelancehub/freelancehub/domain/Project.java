@@ -33,22 +33,20 @@ public class Project {
     Long clientId;
 
     public Project(
-            Long id,
             Long userId,
             String name,
-            ProjectStatus status,
+            String description,
             ProjectType type,
             BigDecimal value,
-            BigDecimal cost,
-            Long clientId) {
-        this.id = id;
+            Deadline deadline
+            ) {
         this.userId = userId;
         this.name = name;
-        this.status = status;
+        this.description = description;
+        this.status = ProjectStatus.IN_NEGOTIATION;
         this.type = type;
         this.value = value;
-        this.cost = cost;
-        this.clientId = clientId;
+        this.deadline = deadline;
     }
 
     public void changeStatus (ProjectStatus newStatus) {
