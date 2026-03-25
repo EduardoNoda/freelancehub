@@ -42,6 +42,31 @@ public class UserRepositoryJdbcImpl implements UserRepository {
     }
 
     @Override
+    public Optional<User> findById(Long id) {
+        String sql = "SELECT id, name, last_name, email, password_hash FROM users WHERE id = ?";
+
+        try (Connection connection = dataSource.getConnection()) {
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setLong(1, id);
+
+            try (ResultSet result = stmt.executeQuery()) {
+                User user = new User(
+                        result.getLong("id"),
+                        result.getString("name"),
+                        result.getString("last_name"),
+                        new Email(result.getString("email")),
+                        result.getString("password_hash")
+                );
+                return Optional.of(user);
+            }
+
+        } catch (SQLException exception) {
+            throw new RuntimeException("Error to find by id", exception);
+        }
+    }
+
+    @Override
     public Optional<User> findByEmail(String email) {
 
         String sql = "SELECT id, name, last_name, email, password_hash FROM users WHERE email = ?";
