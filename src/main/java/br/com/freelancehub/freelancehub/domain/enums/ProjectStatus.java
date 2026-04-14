@@ -11,6 +11,7 @@ public enum ProjectStatus {
             case IN_NEGOTIATION -> newStatus == IN_PROGRESS || newStatus == CANCELED;
             case IN_PROGRESS -> newStatus == COMPLETED || newStatus == CANCELED;
             case COMPLETED, CANCELED-> false;
+            default -> throw new IllegalArgumentException("Invalid transaction.");
         };
     }
 }

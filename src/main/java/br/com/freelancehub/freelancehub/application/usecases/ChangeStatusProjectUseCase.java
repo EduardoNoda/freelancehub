@@ -2,22 +2,19 @@ package br.com.freelancehub.freelancehub.application.usecases;
 
 import br.com.freelancehub.freelancehub.domain.Project;
 import br.com.freelancehub.freelancehub.domain.User;
-import br.com.freelancehub.freelancehub.domain.enums.ProjectType;
+import br.com.freelancehub.freelancehub.domain.enums.ProjectStatus;
 import br.com.freelancehub.freelancehub.domain.repository.ProjectRepository;
 import br.com.freelancehub.freelancehub.domain.repository.UserRepository;
-import br.com.freelancehub.freelancehub.domain.valueobjects.Deadline;
 
-import java.math.BigDecimal;
 import java.time.Clock;
-import java.time.LocalDate;
 
-public class CreateProjectUseCase {
+public class ChangeStatusProjectUseCase {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final Clock clock;
 
-    public CreateProjectUseCase (
+    public ChangeStatusProjectUseCase (
             ProjectRepository projectRepository,
             UserRepository userRepository,
             Clock clock
@@ -27,15 +24,12 @@ public class CreateProjectUseCase {
         this.clock = clock;
     }
 
-    public void execute(Long userId, String name, String description, ProjectType type, BigDecimal value, LocalDate deadline) {
-        User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    public void execute(Long userId, Long projectId, ProjectStatus status) {
+        Project project = projectRepository.findByIdAndUserId(projectId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Project not found or User does not own the project"));
 
-        Deadline projectDeadline = new Deadline(deadline);
-
-        Project project = new Project(userId, name, description, type, value, projectDeadline);
-
-        projectRepository.save(project);
+        project.changeStatus(status, clock.instant());
+        projectRepository.update(project);
     }
 
 }

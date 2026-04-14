@@ -8,6 +8,8 @@ public interface ProjectRepository {
 
     void save(Project project);
 
-    Optional<Project> findById(Long id);
+    void update(Project project);
+
+    Optional<Project> findByIdAndUserId(Long projectId, Long userId);
 
 }
