@@ -26,7 +26,7 @@ public class UserController {
 
     public record RegisterRequest(String name, String lastName, String email, String password){}
     public record LoginRequest(String email, String password) {}
-    public record TokenRespose(String token) {}
+    public record TokenResponse(String token) {}
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody RegisterRequest request) {
@@ -40,11 +40,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenRespose> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
         String token = loginUserUseCase.execute(
                 request.email(),
                 request.password()
         );
-        return ResponseEntity.ok(new TokenRespose(token));
+        return ResponseEntity.ok(new TokenResponse(token));
     }
 }

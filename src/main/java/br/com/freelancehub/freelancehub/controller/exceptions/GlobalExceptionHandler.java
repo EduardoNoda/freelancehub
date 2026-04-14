@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
             LocalDateTime timestamp,
             Integer status,
             String error,
-            String massage
+            String message
     ) {}
 
     @ExceptionHandler(IllegalArgumentException.class)

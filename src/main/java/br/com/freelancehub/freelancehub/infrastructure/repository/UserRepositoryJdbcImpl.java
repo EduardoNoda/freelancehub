@@ -30,7 +30,7 @@ public class UserRepositoryJdbcImpl implements UserRepository {
 
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getLastName());
-            stmt.setString(3, user.getEmailAdress());
+            stmt.setString(3, user.getEmailAddress());
             stmt.setString(4, user.getPasswordHash());
 
             stmt.executeUpdate();
@@ -51,19 +51,22 @@ public class UserRepositoryJdbcImpl implements UserRepository {
             stmt.setLong(1, id);
 
             try (ResultSet result = stmt.executeQuery()) {
-                User user = new User(
-                        result.getLong("id"),
-                        result.getString("name"),
-                        result.getString("last_name"),
-                        new Email(result.getString("email")),
-                        result.getString("password_hash")
-                );
-                return Optional.of(user);
+                if(result.next()) {
+                    User user = new User(
+                            result.getLong("id"),
+                            result.getString("name"),
+                            result.getString("last_name"),
+                            new Email(result.getString("email")),
+                            result.getString("password_hash")
+                    );
+                    return Optional.of(user);
+                }
             }
 
         } catch (SQLException exception) {
             throw new RuntimeException("Error to find by id", exception);
         }
+        return Optional.empty();
     }
 
     @Override

@@ -52,17 +52,18 @@ public class User {
         this.password = password;
     }
 
+    public Long getId() { return id; }
 
-    public String getName () { return this.name = name; }
+    public String getName () { return name; }
 
-    public String getLastName () { return this.lastName = lastName; }
+    public String getLastName () { return lastName; }
 
-    public String getPasswordHash() { return this.password; }
+    public String getPasswordHash() { return password; }
 
     private Email getEmail() {
-        return this.email;
+        return email;
     }
 
-    public String getEmailAdress() { return this.email.email(); }
+    public String getEmailAddress() { return email.email(); }
 
 }
