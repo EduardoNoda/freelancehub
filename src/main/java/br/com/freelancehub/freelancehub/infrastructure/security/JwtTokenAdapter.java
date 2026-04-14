@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 
 @Component
 public class JwtTokenAdapter implements TokenService {
@@ -18,7 +19,7 @@ public class JwtTokenAdapter implements TokenService {
     private final String issuer;
 
     public JwtTokenAdapter (
-            @Value("${security.jwt.secret:very-long-key}") String secret,
+            @Value("${security.jwt.secret}") String secret,
             @Value("${security.jwt.issuer:freelancehub}") String issuer
     ) {
         this.secret = secret;
@@ -33,7 +34,7 @@ public class JwtTokenAdapter implements TokenService {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
                     .withIssuer(issuer)
-                    .withSubject(user.getEmailAdress())
+                    .withSubject(user.getEmailAddress())
                     .withExpiresAt(generateOverdueDate())
                     .sign(algorithm);
 
@@ -58,6 +59,6 @@ public class JwtTokenAdapter implements TokenService {
     }
 
     public Instant generateOverdueDate() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.UTC);
+        return Instant.now().plus(2, ChronoUnit.HOURS);
     }
 }
