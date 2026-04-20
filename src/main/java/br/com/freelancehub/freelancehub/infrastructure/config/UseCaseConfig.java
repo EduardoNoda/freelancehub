@@ -44,4 +44,8 @@ public class UseCaseConfig {
         return new ChangeStatusProjectUseCase(projectRepository, userRepository, clock);
     }
 
+    @Bean
+    public ListProjectByUserUseCase listProjectByUserUseCase(ProjectRepository projectRepository) {
+        return new ListProjectByUserUseCase(projectRepository);
+    }
 }
