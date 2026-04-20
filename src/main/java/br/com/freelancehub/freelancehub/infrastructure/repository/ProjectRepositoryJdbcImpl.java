@@ -8,7 +8,10 @@ import br.com.freelancehub.freelancehub.domain.valueobjects.Deadline;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import javax.xml.transform.Result;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -101,24 +104,7 @@ public class ProjectRepositoryJdbcImpl implements ProjectRepository {
 
             try(ResultSet result = stmt.executeQuery()) {
                 if(result.next()) {
-
-                    Date sqlDeadline = result.getDate("deadline");
-                    Deadline domainDeadline = null;
-                    if(sqlDeadline != null)
-                        domainDeadline = new Deadline(sqlDeadline.toLocalDate());
-
-                    Project project = new Project(
-                            result.getLong("id"),
-                            result.getLong("user_id"),
-                            result.getString("name"),
-                            result.getString("description"),
-                            ProjectStatus.valueOf(result.getString("status")),
-                            ProjectType.valueOf(result.getString("type")),
-                            result.getBigDecimal("value"),
-                            result.getBigDecimal("cost"),
-                            domainDeadline,
-                            result.getTimestamp("updated_at").toInstant()
-                    );
+                    Project project = mapResultSet(result);
                     return Optional.of(project);
                 }
             }
@@ -128,5 +114,54 @@ public class ProjectRepositoryJdbcImpl implements ProjectRepository {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public List<Project> findAllProjectsByUserPaginated(Long userId, int limit, int offset) {
+
+        String sql = "SELECT * FROM projects WHERE user_id = ? ORDER BY updated_at DESC LIMIT ? OFFSET ?";
+
+        List<Project> projects = new ArrayList<>();
+
+        try(Connection connection = dataSource.getConnection()) {
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setLong(1, userId);
+            stmt.setInt(2, limit);
+            stmt.setInt(3, offset);
+
+            try(ResultSet result = stmt.executeQuery()) {
+                while(result.next()) {
+                    Project project = mapResultSet(result);
+                    projects.add(project);
+                }
+            }
+
+        } catch(SQLException exception) {
+            throw new RuntimeException("Error to find user or projects by user", exception);
+        }
+
+        return projects;
+    }
+
+    private Project mapResultSet(ResultSet result) throws SQLException{
+        Date sqlDeadline = result.getDate("deadline");
+        Deadline domainDeadline = null;
+        if(sqlDeadline != null)
+            domainDeadline = new Deadline(sqlDeadline.toLocalDate());
+
+        return new Project(
+                result.getLong("id"),
+                result.getLong("user_id"),
+                result.getString("name"),
+                result.getString("description"),
+                ProjectStatus.valueOf(result.getString("status")),
+                ProjectType.valueOf(result.getString("type")),
+                result.getBigDecimal("value"),
+                result.getBigDecimal("cost"),
+                domainDeadline,
+                result.getTimestamp("updated_at").toInstant()
+        );
     }
 }
