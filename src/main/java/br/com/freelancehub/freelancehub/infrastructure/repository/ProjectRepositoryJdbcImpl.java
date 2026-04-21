@@ -1,5 +1,6 @@
 package br.com.freelancehub.freelancehub.infrastructure.repository;
 
+import br.com.freelancehub.freelancehub.application.usecases.dtos.FinancialSummaryResponse;
 import br.com.freelancehub.freelancehub.domain.Project;
 import br.com.freelancehub.freelancehub.domain.enums.ProjectStatus;
 import br.com.freelancehub.freelancehub.domain.enums.ProjectType;
@@ -8,7 +9,7 @@ import br.com.freelancehub.freelancehub.domain.valueobjects.Deadline;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import javax.xml.transform.Result;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -143,6 +144,34 @@ public class ProjectRepositoryJdbcImpl implements ProjectRepository {
         }
 
         return projects;
+    }
+
+    @Override
+    public FinancialSummaryResponse getFinancialSummaryByUser(Long userId) {
+        String sql = "SELECT " +
+                "COALESCE(SUM(value), 0) AS total_revenue, " +
+                "COALESCE(SUM(cost), 0) as total_cost " +
+                "FROM projects " +
+                "WHERE user_id = ? AND status = 'COMPLETED'";
+
+        try(Connection connection = dataSource.getConnection()){
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setLong(1, userId);
+
+            try(ResultSet resultSet = stmt.executeQuery()) {
+                if(resultSet.next()) {
+                    BigDecimal totalRevenue = resultSet.getBigDecimal("total_revenue");
+                    BigDecimal totalCost = resultSet.getBigDecimal("total_cost");
+
+                    BigDecimal profit = totalRevenue.subtract(totalCost);
+                    return new FinancialSummaryResponse(totalRevenue, totalCost, profit);
+                }
+            }
+        }catch (SQLException exception) {
+            throw new RuntimeException("Erro ao calcular o montante total do usuario");
+        }
+        return new FinancialSummaryResponse(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
     private Project mapResultSet(ResultSet result) throws SQLException{

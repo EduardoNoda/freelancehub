@@ -1,5 +1,6 @@
 package br.com.freelancehub.freelancehub.domain.repository;
 
+import br.com.freelancehub.freelancehub.application.usecases.dtos.FinancialSummaryResponse;
 import br.com.freelancehub.freelancehub.domain.Project;
 
 import java.util.List;
@@ -15,4 +16,5 @@ public interface ProjectRepository {
 
     List<Project> findAllProjectsByUserPaginated(Long userId, int limit, int offset);
 
+    FinancialSummaryResponse getFinancialSummaryByUser(Long userId);
 }

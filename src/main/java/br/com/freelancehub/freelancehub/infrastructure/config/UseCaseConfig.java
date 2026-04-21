@@ -48,4 +48,9 @@ public class UseCaseConfig {
     public ListProjectByUserUseCase listProjectByUserUseCase(ProjectRepository projectRepository) {
         return new ListProjectByUserUseCase(projectRepository);
     }
+
+    @Bean
+    public GetFinancialSummaryUseCase getFinancialSummaryUseCase(ProjectRepository projectRepository) {
+        return new GetFinancialSummaryUseCase(projectRepository);
+    }
 }
