@@ -19,4 +19,6 @@ public interface ProjectRepository {
     FinancialSummaryResponse getFinancialSummaryByUser(Long userId);
 
     long countProjectByUser(Long userId);
+
+    void deleteProjectById(Long id, Long userId);
 }

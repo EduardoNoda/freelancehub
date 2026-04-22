@@ -2,9 +2,11 @@ package br.com.freelancehub.freelancehub.controller;
 
 import br.com.freelancehub.freelancehub.application.usecases.ChangeStatusProjectUseCase;
 import br.com.freelancehub.freelancehub.application.usecases.CreateProjectUseCase;
+import br.com.freelancehub.freelancehub.application.usecases.DeleteProjectUseCase;
 import br.com.freelancehub.freelancehub.application.usecases.ListProjectByUserUseCase;
 import br.com.freelancehub.freelancehub.application.usecases.dtos.PageResponse;
 import br.com.freelancehub.freelancehub.application.usecases.dtos.ProjectSummaryResponse;
+import br.com.freelancehub.freelancehub.domain.Project;
 import br.com.freelancehub.freelancehub.domain.User;
 import br.com.freelancehub.freelancehub.domain.enums.ProjectStatus;
 import br.com.freelancehub.freelancehub.domain.enums.ProjectType;
@@ -24,15 +26,18 @@ public class ProjectController {
     private final CreateProjectUseCase createProjectUseCase;
     private final ChangeStatusProjectUseCase changeStatusProjectUseCase;
     private final ListProjectByUserUseCase listProjectByUserUseCase;
+    private final DeleteProjectUseCase deleteProjectUseCase;
 
     public ProjectController (
             CreateProjectUseCase createProjectUseCase,
             ChangeStatusProjectUseCase changeStatusProjectUseCase,
-            ListProjectByUserUseCase listProjectByUserUseCase
+            ListProjectByUserUseCase listProjectByUserUseCase,
+            DeleteProjectUseCase deleteProjectUseCase
     ) {
         this.createProjectUseCase = createProjectUseCase;
         this.changeStatusProjectUseCase = changeStatusProjectUseCase;
         this.listProjectByUserUseCase = listProjectByUserUseCase;
+        this.deleteProjectUseCase = deleteProjectUseCase;
     }
 
     public record CreateProjectRequest(String name, String description, ProjectType type, BigDecimal value, LocalDate deadline) {}
@@ -78,5 +83,14 @@ public class ProjectController {
         Long userId = user.getId();
         PageResponse<ProjectSummaryResponse> response = listProjectByUserUseCase.execute(userId, limit, offset);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity<Void> deleteProject(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long projectId
+    ) {
+        deleteProjectUseCase.execute(projectId, user.getId());
+        return ResponseEntity.noContent().build();
     }
 }

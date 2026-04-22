@@ -57,7 +57,7 @@ public class ProjectRepositoryJdbcImpl implements ProjectRepository {
     @Override
     public void update(Project project) {
         String sql = "UPDATE projects SET name = ?, description = ?, status = ?, type = ?, value = ?, cost = ?, deadline = ?, updated_at = ? " +
-                    "WHERE id = ? AND user_id = ?";
+                    "WHERE id = ? AND user_id = ? AND deleted_at IS NULL";
 
         try(Connection connection = dataSource.getConnection()) {
 
@@ -95,7 +95,7 @@ public class ProjectRepositoryJdbcImpl implements ProjectRepository {
 
         String sql = "SELECT id, user_id, name, description, status, type, value, cost, deadline, updated_at " +
                     "FROM projects " +
-                    "WHERE id = ? AND user_id = ?";
+                    "WHERE id = ? AND user_id = ? AND deleted_at IS NULL";
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -120,7 +120,7 @@ public class ProjectRepositoryJdbcImpl implements ProjectRepository {
     @Override
     public List<Project> findAllProjectsByUserPaginated(Long userId, int limit, int offset) {
 
-        String sql = "SELECT * FROM projects WHERE user_id = ? ORDER BY updated_at DESC LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM projects WHERE user_id = ? AND deleted_at IS NULL ORDER BY updated_at DESC LIMIT ? OFFSET ?";
 
         List<Project> projects = new ArrayList<>();
 
@@ -152,7 +152,7 @@ public class ProjectRepositoryJdbcImpl implements ProjectRepository {
                 "COALESCE(SUM(value), 0) AS total_revenue, " +
                 "COALESCE(SUM(cost), 0) as total_cost " +
                 "FROM projects " +
-                "WHERE user_id = ? AND status = 'COMPLETED'";
+                "WHERE user_id = ? AND status = 'COMPLETED' AND deleted_at IS NULL";
 
         try(Connection connection = dataSource.getConnection()){
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -177,7 +177,7 @@ public class ProjectRepositoryJdbcImpl implements ProjectRepository {
     @Override
     public long countProjectByUser(Long userId) {
 
-        String sql = "SELECT COUNT(*) FROM projects WHERE user_id = ?";
+        String sql = "SELECT COUNT(*) FROM projects WHERE user_id = ? AND deleted_at IS NULL";
 
         try(Connection connection = dataSource.getConnection()) {
 
@@ -193,6 +193,24 @@ public class ProjectRepositoryJdbcImpl implements ProjectRepository {
         }
 
         return 0;
+    }
+
+    @Override
+    public void deleteProjectById(Long id, Long userId) {
+        String sql = "UPDATE projects " +
+                    "SET deleted_at = CURRENT_TIMESTAMP " +
+                    "WHERE id = ? AND user_id = ?";
+
+        try(Connection connection = dataSource.getConnection()) {
+
+            PreparedStatement stmt  = connection.prepareStatement(sql);
+
+            stmt.setLong(1, id);
+            stmt.setLong(2, userId);
+            stmt.executeUpdate();
+        } catch (SQLException exception) {
+            throw new RuntimeException("Error: user or project not found or deleted_at not null", exception);
+        }
     }
 
     private Project mapResultSet(ResultSet result) throws SQLException{

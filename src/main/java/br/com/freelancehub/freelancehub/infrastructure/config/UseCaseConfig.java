@@ -53,4 +53,9 @@ public class UseCaseConfig {
     public GetFinancialSummaryUseCase getFinancialSummaryUseCase(ProjectRepository projectRepository) {
         return new GetFinancialSummaryUseCase(projectRepository);
     }
+
+    @Bean
+    public DeleteProjectUseCase deleteProjectUseCase(ProjectRepository projectRepository) {
+        return new DeleteProjectUseCase(projectRepository);
+    }
 }

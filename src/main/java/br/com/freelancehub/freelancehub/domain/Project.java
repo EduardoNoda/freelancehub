@@ -30,6 +30,8 @@ public class Project {
 
     private Instant updatedAt;
 
+    private Instant deletedAt;
+
     //private Long clientId;
 
     public Project(
@@ -48,6 +50,7 @@ public class Project {
         this.value = value;
         this.deadline = deadline;
         this.updatedAt = Instant.now();
+        this.deletedAt = null;
     }
 
     public Project(
@@ -98,5 +101,12 @@ public class Project {
 
         this.deadline = newDeadLine;
         this.updatedAt = updateTime;
+    }
+
+    public void deleteProject() {
+        if(this.status == ProjectStatus.IN_PROGRESS || this.status == ProjectStatus.COMPLETED)
+            throw new IllegalArgumentException("Error: project not cancellable if status IN_NEGOTIATION or COMPLETED.");
+
+        this.deletedAt = Instant.now();
     }
 }

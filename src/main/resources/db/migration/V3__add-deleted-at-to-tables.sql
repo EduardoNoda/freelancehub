@@ -1,0 +1,2 @@
+ALTER TABLE projects ADD COLUMN deleted_at TIMESTAMP;
+ALTER TABLE users ADD COLUMN deleted_at TIMESTAMP;
