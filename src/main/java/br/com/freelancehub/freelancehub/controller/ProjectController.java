@@ -3,6 +3,7 @@ package br.com.freelancehub.freelancehub.controller;
 import br.com.freelancehub.freelancehub.application.usecases.ChangeStatusProjectUseCase;
 import br.com.freelancehub.freelancehub.application.usecases.CreateProjectUseCase;
 import br.com.freelancehub.freelancehub.application.usecases.ListProjectByUserUseCase;
+import br.com.freelancehub.freelancehub.application.usecases.dtos.PageResponse;
 import br.com.freelancehub.freelancehub.application.usecases.dtos.ProjectSummaryResponse;
 import br.com.freelancehub.freelancehub.domain.User;
 import br.com.freelancehub.freelancehub.domain.enums.ProjectStatus;
@@ -69,12 +70,13 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProjectSummaryResponse>> listProjects(
-            @AuthenticationPrincipal Long userId,
+    public ResponseEntity<PageResponse<ProjectSummaryResponse>> listProjects(
+            @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "1") int limit,
             @RequestParam(defaultValue = "10") int offset
     ) {
-        List<ProjectSummaryResponse> response = listProjectByUserUseCase.execute(userId, limit, offset);
+        Long userId = user.getId();
+        PageResponse<ProjectSummaryResponse> response = listProjectByUserUseCase.execute(userId, limit, offset);
         return ResponseEntity.ok(response);
     }
 }

@@ -169,9 +169,30 @@ public class ProjectRepositoryJdbcImpl implements ProjectRepository {
                 }
             }
         }catch (SQLException exception) {
-            throw new RuntimeException("Erro ao calcular o montante total do usuario");
+            throw new RuntimeException("Erro ao calcular o montante total do usuario", exception);
         }
         return new FinancialSummaryResponse(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+    }
+
+    @Override
+    public long countProjectByUser(Long userId) {
+
+        String sql = "SELECT COUNT(*) FROM projects WHERE user_id = ?";
+
+        try(Connection connection = dataSource.getConnection()) {
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setLong(1, userId);
+
+            try(ResultSet resultSet = stmt.executeQuery()) {
+                if(resultSet.next()) return resultSet.getLong(1);
+            }
+        } catch (SQLException exception) {
+            throw new RuntimeException("Error counting projects", exception);
+        }
+
+        return 0;
     }
 
     private Project mapResultSet(ResultSet result) throws SQLException{

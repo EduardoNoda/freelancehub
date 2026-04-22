@@ -17,4 +17,6 @@ public interface ProjectRepository {
     List<Project> findAllProjectsByUserPaginated(Long userId, int limit, int offset);
 
     FinancialSummaryResponse getFinancialSummaryByUser(Long userId);
+
+    long countProjectByUser(Long userId);
 }

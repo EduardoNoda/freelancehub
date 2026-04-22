@@ -1,12 +1,11 @@
 package br.com.freelancehub.freelancehub.application.usecases;
 
+import br.com.freelancehub.freelancehub.application.usecases.dtos.PageResponse;
 import br.com.freelancehub.freelancehub.application.usecases.dtos.ProjectSummaryResponse;
 import br.com.freelancehub.freelancehub.domain.Project;
 import br.com.freelancehub.freelancehub.domain.repository.ProjectRepository;
-import br.com.freelancehub.freelancehub.domain.repository.UserRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ListProjectByUserUseCase {
 
@@ -18,7 +17,7 @@ public class ListProjectByUserUseCase {
         this.projectRepository = projectRepository;
     }
 
-    public List<ProjectSummaryResponse> execute(Long userId, int page, int size) {
+    public PageResponse<ProjectSummaryResponse> execute(Long userId, int page, int size) {
 
         if(size < 1) page = 1;
         if(size < 1 || size > 50) size = 10;
@@ -28,7 +27,11 @@ public class ListProjectByUserUseCase {
 
         List<Project> projects = projectRepository.findAllProjectsByUserPaginated(userId, limit, offset);
 
-        return projects.stream()
+        long totalElements = projectRepository.countProjectByUser(userId);
+
+        int totalPages = (int) Math.ceil((double) totalElements/size);
+
+        List<ProjectSummaryResponse> content = projects.stream()
                 .map(project -> new ProjectSummaryResponse(
                                 project.getId(),
                                 project.getName(),
@@ -37,7 +40,8 @@ public class ListProjectByUserUseCase {
                                 project.getValue(),
                                 project.getUpdatedAt()
                         ))
-                .collect(Collectors.toList());
+                .toList();
+        return new PageResponse<>(content, page, size, totalElements, totalPages);
 
     }
 
