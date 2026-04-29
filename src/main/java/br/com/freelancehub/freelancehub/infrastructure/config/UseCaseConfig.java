@@ -58,4 +58,9 @@ public class UseCaseConfig {
     public DeleteProjectUseCase deleteProjectUseCase(ProjectRepository projectRepository) {
         return new DeleteProjectUseCase(projectRepository);
     }
+
+    @Bean
+    public DeleteUserUseCase deleteUserUseCase(UserRepository userRepository) {
+        return new DeleteUserUseCase(userRepository);
+    }
 }

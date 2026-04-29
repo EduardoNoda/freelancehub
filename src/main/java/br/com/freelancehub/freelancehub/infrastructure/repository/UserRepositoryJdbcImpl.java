@@ -43,7 +43,7 @@ public class UserRepositoryJdbcImpl implements UserRepository {
 
     @Override
     public Optional<User> findById(Long id) {
-        String sql = "SELECT id, name, last_name, email, password_hash FROM users WHERE id = ?";
+        String sql = "SELECT id, name, last_name, email, password_hash FROM users WHERE id = ? AND deleted_at IS NULL";
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -72,7 +72,7 @@ public class UserRepositoryJdbcImpl implements UserRepository {
     @Override
     public Optional<User> findByEmail(String email) {
 
-        String sql = "SELECT id, name, last_name, email, password_hash FROM users WHERE email = ?";
+        String sql = "SELECT id, name, last_name, email, password_hash FROM users WHERE email = ? AND deleted_at IS NULL";
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -97,5 +97,21 @@ public class UserRepositoryJdbcImpl implements UserRepository {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public void deleteUserById(Long userId) {
+        String sql = "UPDATE users " +
+                    "SET deleted_at = CURRENT_TIMESTAMP " +
+                    "WHERE id = ?";
+
+        try(Connection connection = dataSource.getConnection()) {
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setLong(1, userId);
+            stmt.executeUpdate();
+        } catch (SQLException exception) {
+            throw new RuntimeException("Error to delete user");
+        }
     }
 }

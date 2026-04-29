@@ -2,6 +2,8 @@ package br.com.freelancehub.freelancehub.domain;
 
 import br.com.freelancehub.freelancehub.domain.valueobjects.Email;
 
+import java.time.Instant;
+
 public class User {
 
     private Long id;
@@ -13,6 +15,8 @@ public class User {
     private Email email;
 
     private String password;
+
+    private Instant deletedAt;
 
     public User (
             String name,
@@ -66,4 +70,5 @@ public class User {
 
     public String getEmailAddress() { return email.email(); }
 
+    public void deleteUser() {}; //not implemented
 }
